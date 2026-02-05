@@ -70,8 +70,8 @@ export default function Home() {
     }, 1000);
   };
 
-  const whatsappLink = "https://wa.me/5511999999999";
-  const emailLink = "mailto:janiele@example.com";
+  const whatsappLink = "https://wa.me/5511989217827";
+  const emailLink = "mailto:janieles9898@gmail.com";
 
   return (
     <div className="min-h-screen bg-white text-foreground">
@@ -347,7 +347,7 @@ export default function Home() {
                     </div>
                     <div>
                       <p className="font-heading text-sm text-muted-foreground">WhatsApp</p>
-                      <p className="font-heading text-foreground">(11) 9999-9999</p>
+                      <p className="font-heading text-foreground">(11) 98921-7827</p>
                     </div>
                   </a>
 
@@ -360,7 +360,7 @@ export default function Home() {
                     </div>
                     <div>
                       <p className="font-heading text-sm text-muted-foreground">E-mail</p>
-                      <p className="font-heading text-foreground">janiele@example.com</p>
+                      <p className="font-heading text-foreground">janieles9898@gmail.com</p>
                     </div>
                   </a>
                 </div>
