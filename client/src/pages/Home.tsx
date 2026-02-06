@@ -57,7 +57,7 @@ export default function Home() {
 
     // Enviar para WhatsApp
     const message = `Olá Janiele! Gostaria de agendar uma consulta:\n\nNome: ${formData.name}\nE-mail: ${formData.email}\nTelefone: ${formData.phone}\nData: ${formData.date}\nHorário: ${formData.time}\n\nMensagem: ${formData.message || "Sem mensagem adicional"}`;
-    const whatsappUrl = `https://wa.me/5511999999999?text=${encodeURIComponent(message)}`;
+    const whatsappUrl = `https://wa.me/5511989217827?text=${encodeURIComponent(message)}`;
     
     // Enviar e-mail também (simulado com toast)
     toast.success("Solicitação enviada! Você será redirecionado para o WhatsApp");
@@ -110,7 +110,7 @@ export default function Home() {
                   Saúde através da Nutrição
                 </h2>
               </div>
-              <p className="font-body text-lg text-muted-foreground leading-relaxed max-w-lg">
+              <p className="font-body text-lg text-muted-foreground leading-relaxed max-w-lg text-justify">
                 Nutricionista com sólida formação em Nutrição Clínica, Hospitalar, Saúde Mental e Saúde Coletiva. 
                 Atuo com foco em evidências científicas e cuidado integral ao paciente.
               </p>
@@ -234,7 +234,7 @@ export default function Home() {
 
             <div className="divider-sage mb-12"></div>
 
-            <div className="space-y-8 font-body text-lg text-muted-foreground leading-relaxed">
+            <div className="space-y-8 font-body text-lg text-muted-foreground leading-relaxed text-justify">
               <p>
                 Sou nutricionista com sólida formação técnica e prática em <strong className="text-foreground">Nutrição Clínica, Hospitalar, Saúde Mental, Saúde Coletiva e Segurança Alimentar</strong>, atuando com foco em evidências científicas, ética profissional e cuidado integral ao paciente.
               </p>
@@ -244,7 +244,7 @@ export default function Home() {
                   <Heart className="w-5 h-5 text-accent" />
                   Experiência Clínica Hospitalar
                 </h3>
-                <p>
+                <p className="text-justify">
                   Possuo experiência consolidada em Nutrição Clínica Hospitalar, com atuação no Hospital Municipal Dr. Moysés Deutsch (M'Boi Mirim), em parceria com o Hospital Israelita Albert Einstein. Realizei avaliações nutricionais completas (antropométricas, clínicas e laboratoriais), acompanhamento diário em leitos, proposição de condutas dietoterápicas individualizadas e registros em sistema Tasy, sempre alinhada às diretrizes institucionais.
                 </p>
               </div>
@@ -254,7 +254,7 @@ export default function Home() {
                   <Leaf className="w-5 h-5 text-accent" />
                   Unidades de Alimentação e Nutrição
                 </h3>
-                <p>
+                <p className="text-justify">
                   Tenho experiência prática em Unidades de Alimentação e Nutrição (UAN) hospitalar, com atuação no controle de qualidade dos alimentos, aplicação de boas práticas de manipulação, segurança alimentar, adequação de dietas às diferentes condições clínicas e acompanhamento da produção de refeições para pacientes em diferentes níveis de complexidade.
                 </p>
               </div>
@@ -264,12 +264,12 @@ export default function Home() {
                   <Brain className="w-5 h-5 text-accent" />
                   Saúde Mental e Bem-estar
                 </h3>
-                <p>
+                <p className="text-justify">
                   Atuei como Técnica em Nutrição e Dietética na área da Saúde Mental, desenvolvendo conhecimento específico sobre o cuidado nutricional de pacientes com transtornos mentais, abordagem humanizada, escuta qualificada e entendimento das interfaces entre nutrição, comportamento alimentar e uso de psicotrópicos.
                 </p>
               </div>
 
-              <p>
+              <p className="text-justify">
                 Complementarmente, possuo vivência em Saúde Coletiva e Banco de Alimentos, com foco em segurança alimentar, combate ao desperdício e apoio a populações em situação de vulnerabilidade social.
               </p>
             </div>
