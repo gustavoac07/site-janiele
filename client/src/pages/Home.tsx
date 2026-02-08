@@ -16,6 +16,49 @@ import { toast } from "sonner";
  * - Transições suaves, hover effects elegantes
  */
 
+// Horários de funcionamento: segunda a sexta, 9h às 20h
+const WORKING_HOURS = {
+  start: 9,
+  end: 20,
+  interval: 1, // em horas
+};
+
+// Horários já agendados (simulado - em produção viria de um banco de dados)
+const BOOKED_TIMES = [
+  { date: new Date().toISOString().split('T')[0], time: "13:00" },
+  { date: new Date().toISOString().split('T')[0], time: "15:00" },
+];
+
+const getAvailableHours = (selectedDate: string): string[] => {
+  if (!selectedDate) return [];
+
+  const date = new Date(selectedDate + "T00:00:00");
+  const dayOfWeek = date.getDay();
+
+  // Verificar se é segunda a sexta (1-5)
+  if (dayOfWeek === 0 || dayOfWeek === 6) {
+    return []; // Fim de semana não tem atendimento
+  }
+
+  const availableHours: string[] = [];
+  for (let hour = WORKING_HOURS.start; hour < WORKING_HOURS.end; hour++) {
+    const timeString = `${String(hour).padStart(2, "0")}:00`;
+    const isBooked = BOOKED_TIMES.some(
+      (booking) => booking.date === selectedDate && booking.time === timeString
+    );
+    if (!isBooked) {
+      availableHours.push(timeString);
+    }
+  }
+  return availableHours;
+};
+
+const getMinDate = (): string => {
+  const today = new Date();
+  today.setDate(today.getDate() + 1);
+  return today.toISOString().split('T')[0];
+};
+
 export default function Home() {
   const [isBookingOpen, setIsBookingOpen] = useState(false);
   const [formData, setFormData] = useState({
@@ -26,10 +69,21 @@ export default function Home() {
     time: "",
     message: "",
   });
+  const [availableHours, setAvailableHours] = useState<string[]>([]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const selectedDate = e.target.value;
+    setFormData((prev) => ({ ...prev, date: selectedDate, time: "" }));
+    setAvailableHours(getAvailableHours(selectedDate));
+  };
+
+  const handleTimeSelect = (time: string) => {
+    setFormData((prev) => ({ ...prev, time }));
   };
 
   const handleBooking = (e: React.FormEvent) => {
@@ -55,8 +109,12 @@ export default function Home() {
       return;
     }
 
+    // Formatar data para exibição
+    const dateObj = new Date(formData.date + "T00:00:00");
+    const formattedDate = dateObj.toLocaleDateString("pt-BR");
+
     // Enviar para WhatsApp
-    const message = `Olá Janiele! Gostaria de agendar uma consulta:\n\nNome: ${formData.name}\nE-mail: ${formData.email}\nTelefone: ${formData.phone}\nData: ${formData.date}\nHorário: ${formData.time}\n\nMensagem: ${formData.message || "Sem mensagem adicional"}`;
+    const message = `Olá Janiele! Gostaria de agendar uma consulta:\n\nNome: ${formData.name}\nE-mail: ${formData.email}\nTelefone: ${formData.phone}\nData: ${formattedDate}\nHorário: ${formData.time}\n\nMensagem: ${formData.message || "Sem mensagem adicional"}`;
     const whatsappUrl = `https://wa.me/5511989217827?text=${encodeURIComponent(message)}`;
     
     // Enviar e-mail também (simulado com toast)
@@ -67,6 +125,7 @@ export default function Home() {
       window.open(whatsappUrl, "_blank");
       setIsBookingOpen(false);
       setFormData({ name: "", email: "", phone: "", date: "", time: "", message: "" });
+      setAvailableHours([]);
     }, 1000);
   };
 
@@ -161,30 +220,45 @@ export default function Home() {
                           required
                         />
                       </div>
-                      <div className="grid grid-cols-2 gap-4">
-                        <div>
-                          <Label htmlFor="date">Data *</Label>
-                          <Input
-                            id="date"
-                            name="date"
-                            type="date"
-                            value={formData.date}
-                            onChange={handleInputChange}
-                            required
-                          />
-                        </div>
-                        <div>
-                          <Label htmlFor="time">Horário *</Label>
-                          <Input
-                            id="time"
-                            name="time"
-                            type="time"
-                            value={formData.time}
-                            onChange={handleInputChange}
-                            required
-                          />
-                        </div>
+                      <div>
+                        <Label htmlFor="date">Data *</Label>
+                        <Input
+                          id="date"
+                          name="date"
+                          type="date"
+                          value={formData.date}
+                          onChange={handleDateChange}
+                          min={getMinDate()}
+                          required
+                        />
                       </div>
+                      {formData.date && (
+                        <div>
+                          <Label>Horários Disponíveis *</Label>
+                          {availableHours.length > 0 ? (
+                            <div className="grid grid-cols-4 gap-2 mt-2">
+                              {availableHours.map((hour) => (
+                                <button
+                                  key={hour}
+                                  type="button"
+                                  onClick={() => handleTimeSelect(hour)}
+                                  className={`p-2 rounded-lg text-sm font-heading transition-all duration-200 ${
+                                    formData.time === hour
+                                      ? "bg-accent text-accent-foreground"
+                                      : "bg-secondary text-foreground hover:bg-accent hover:text-accent-foreground"
+                                  }`}
+                                >
+                                  {hour}
+                                </button>
+                              ))}
+                            </div>
+                          ) : (
+                            <p className="text-sm text-muted-foreground mt-2">
+                              Nenhum horário disponível para este dia. Escolha outra data (segunda a sexta).
+                            </p>
+                          )}
+                        </div>
+                      )}
                       <div>
                         <Label htmlFor="message">Mensagem (opcional)</Label>
                         <Textarea
@@ -368,7 +442,7 @@ export default function Home() {
 
               <div>
                 <h3 className="font-heading text-xl text-foreground mb-4">Localização</h3>
-                <p className="font-body text-muted-foreground">
+                <p className="font-body text-muted-foreground leading-relaxed text-justify">
                   São Paulo, SP<br />
                   Brasil
                 </p>
@@ -376,30 +450,28 @@ export default function Home() {
             </div>
 
             {/* CTA */}
-            <div className="animate-slideInRight flex flex-col justify-center space-y-6">
-              <div className="bg-secondary p-8 rounded-xl">
-                <h3 className="font-heading text-2xl text-foreground mb-4">Pronto para começar?</h3>
-                <p className="font-body text-muted-foreground mb-6 leading-relaxed">
-                  Agende sua consulta agora mesmo e dê o primeiro passo para uma vida mais saudável com orientação profissional.
-                </p>
-                <Dialog open={isBookingOpen} onOpenChange={setIsBookingOpen}>
-                  <DialogTrigger asChild>
-                    <Button className="px-6 py-3 bg-accent text-accent-foreground hover:bg-opacity-90 hover:scale-105 transition-all duration-300 ease-in-out rounded-lg font-heading font-semibold w-full">
-                      <Calendar className="w-4 h-4 mr-2" />
-                      Agendar Consulta
-                    </Button>
-                  </DialogTrigger>
-                </Dialog>
-              </div>
+            <div className="animate-slideInRight bg-secondary p-8 rounded-lg space-y-4">
+              <h3 className="font-heading text-2xl text-foreground">Pronto para começar?</h3>
+              <p className="font-body text-muted-foreground leading-relaxed text-justify">
+                Agende sua consulta agora mesmo e dê o primeiro passo para uma vida mais saudável com orientação profissional.
+              </p>
+              <Dialog open={isBookingOpen} onOpenChange={setIsBookingOpen}>
+                <DialogTrigger asChild>
+                  <Button className="w-full bg-accent text-accent-foreground hover:bg-opacity-90 transition-all duration-300 ease-in-out rounded-lg font-heading font-semibold">
+                    <Calendar className="w-4 h-4 mr-2" />
+                    Agendar Consulta
+                  </Button>
+                </DialogTrigger>
+              </Dialog>
             </div>
           </div>
         </div>
       </section>
 
       {/* Footer */}
-      <footer className="bg-foreground text-background py-8 border-t border-border">
+      <footer className="bg-foreground text-background py-12">
         <div className="container mx-auto px-4">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-8">
             <div className="flex items-center gap-2">
               <Leaf className="w-5 h-5" />
               <p className="font-heading text-sm">© 2026 Janiele Carvalho - Nutricionista</p>
